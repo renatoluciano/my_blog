@@ -1,0 +1,26 @@
+<html>
+<head>  
+    <title> Post Detail </title>
+</head>
+<body>          
+    <h1> {{ post.title }} </h1>  
+    <p> {{ post.content }} </p>
+    author: <a href="{% url 'profile' pk=post.author.pk %}">{{ post.author.username }}</a> <br>
+    <p> Likes: {{ post.likes.count }} </p>
+    {% if user.is_authenticated %}
+        {% if user in post.likes.all %}
+            <form action="{% url 'like_post' post.pk %}" method="post">
+                {% csrf_token %}
+                <button style="background-color: red;" type="submit"> Unlike </button>
+            </form>
+        {% else %}
+            <form action="{% url 'like_post' post.pk %}" method="post">
+                {% csrf_token %}
+                <button style="background-color: green;" type="submit"> Like </button>
+            </form>
+        {% endif %}
+    {% endif %}     
+    <a href="{% url 'posts_list' %}"> Back to Post List </a>
+</body>
+</html>
+

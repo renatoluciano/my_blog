@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+</head>
+<body>
+    <h1>Profile</h1>
+    <p>Username: {{ user.username }}</p>
+    <p>Email: {{ user.email }}</p>
+    <hr>
+    <h4> <a href="{% url 'post_create' %}"> Create a new post now! </a> </h4>
+
+    <h2>Posts</h2>
+    {% if posts %}
+        <ul>
+            {% for post in posts %}
+                <li><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></li>
+                Total Likes: {{ post.total_likes }}
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No posts available.</p>
+    {% endif %}  
+    
+    <a href="{% url 'posts_list' %}">Back to Post List</a>
+    <hr>
+    <form action="{% url 'logout' %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Logout</button>
+    </form>

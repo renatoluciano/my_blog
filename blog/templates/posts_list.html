@@ -1,0 +1,28 @@
+<html>
+<head>  
+    <title> Post List </title>
+</head>
+<body>  
+<h1> Post List </h1>
+<h3> Welcome, {{ user.username }}! </h3>
+<h4> <a href="{% url 'post_create' %}"> Create a new post now! </a> </h4>
+<hr>
+<hr>  
+<hr>
+
+{% for post in posts %}  
+    <h2> <a href="{% url 'post_detail' post.pk %}"> {{ post.title }} </a> </h2>  
+    <p> {{ post.content }} </p>
+    <p> Author: {{ post.author.username }} </p>
+{% endfor %}
+
+
+
+<form action="{% url 'logout' %}" method="post">
+    {% csrf_token %}
+    <button type="submit"> Logout </button>
+</form>
+</body>
+</html>
+
+
