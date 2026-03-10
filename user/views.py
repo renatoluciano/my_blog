@@ -2,6 +2,7 @@ from django.shortcuts import redirect, render
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from .models import Friendship
 
 from blog.models import Post
 
@@ -75,5 +76,56 @@ def profile(request, pk):
     
     posts = Post.objects.filter(author_id=pk)
     user =  User.objects.get(id=pk)
+    friendship = Friendship.objects.filter(from_user=request.user, to_user=user).exists()    
+    
+    if user != request.user:
+        different_user = True
+    else:        
+        different_user = False
 
-    return render(request, 'profile.html', {'posts': posts, 'user': user})  
+    print(friendship)
+    print(different_user)
+
+
+    return render(request, 'profile.html', {'posts': posts,
+                                            'user': user, 'different_user': different_user,
+                                            'friendship': friendship}) 
+
+@login_required
+def friendship_list(request):
+
+    # Garantir que o usuário esteja autenticado (decorador @login_required) antes de acessar esta página.
+    # Renderizar a página de lista de amizades, exibindo as amizades do usuário logado.
+    # Garantir que o usuário esteja autenticado (decorador @login_required) antes de acessar esta página.
+
+    friendships = Friendship.objects.filter(from_user=request.user)
+    return render(request, 'friendship_list.html', {'friendships': friendships})
+
+@login_required
+def add_friend(request, pk):
+
+    # Garantir que o usuário esteja autenticado (decorador @login_required) antes de acessar esta funcionalidade.
+    # Adicionar um amigo para o usuário logado, criando uma nova instância de Friendship.
+    # Redirecionar de volta para a página de lista de amizades após adicionar o amigo.
+
+    to_user = User.objects.get(id=pk)
+    if Friendship.objects.filter(from_user=request.user, to_user=to_user).exists():
+        return redirect(request.META.get('HTTP_REFERER', '/'))
+    else:
+        Friendship.objects.create(from_user=request.user, to_user=to_user)
+        return redirect(request.META.get('HTTP_REFERER', '/'))
+
+@login_required
+def remove_friend(request, pk):
+
+    # Garantir que o usuário esteja autenticado (decorador @login_required) antes de acessar esta funcionalidade.
+    # Remover um amigo do usuário logado, deletando a instância correspondente de Friendship.
+    # Redirecionar de volta para a página de lista de amizades após remover o amigo.
+
+    to_user = User.objects.get(id=pk)
+    friendship = Friendship.objects.filter(from_user=request.user, to_user=to_user).first()
+    if friendship:
+        friendship.delete()
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+    
+    
